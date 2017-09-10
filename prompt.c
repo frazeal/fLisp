@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define BUFFER_SIZE 2048
-static char buffer[BUFFER_SIZE]
+static char buffer[BUFFER_SIZE];
 
 /* Fake readline function */
 char* readline(char* prompt) {
