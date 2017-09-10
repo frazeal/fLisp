@@ -28,7 +28,6 @@ void add_history(char* unused) {}
 
 int main(int argc, char* argv[]) {
 
- BEGIN:
   puts("fLisp Version 0.0.0.0.1");
   puts("Copyright ©frazeal 2017");
   puts("Press <Ctrl> + <c> to Exit\n");
@@ -41,12 +40,6 @@ int main(int argc, char* argv[]) {
 
     /* Add input to history */
     add_history(input);
-
-    /* Test command */
-    if (strncmp(input, "clean", strlen(input)) == 0) {
-      printf("strln %lud", strlen(input));
-      goto BEGIN;
-    }
 
     /* Echo input back to user */
     printf("I heard you're a %s\n", input);
