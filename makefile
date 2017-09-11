@@ -1,9 +1,9 @@
 NAME = fLisp
 DEBUG = -g
 CFLAGS = $(DEBUG) -Wall -std=c99 -c 
-LFLAGS = $(DEBUG) -Wall -ledit -o $(NAME)
-SRCS = prompt.c
-OBJS = prompt.o
+LFLAGS = $(DEBUG) -Wall -ledit -lm -o $(NAME)
+SRCS = parsing.c mpc.c
+OBJS = parsing.o mpc.o
 TAR = $(NAME).tar
 MAKEFILE = makefile
 CC = gcc
@@ -19,7 +19,7 @@ all: main
 main: $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS)
 
-prompt.o: $(SRCS)
+parsing.o: $(SRCS)
 ifeq ($(OS), LINUX)
 	$(CC) $(CFLAGS) $(SRCS)
 else ifeq ($(OS), WIN32)
