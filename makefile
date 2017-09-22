@@ -2,8 +2,8 @@ NAME = fLisp
 DEBUG = -g
 CFLAGS = $(DEBUG) -Wall -std=c99 -c 
 LFLAGS = $(DEBUG) -Wall -ledit -lm -o $(NAME)
-SRCS = parsing.c mpc.c
-OBJS = parsing.o mpc.o
+SRCS = evaluating.c mpc.c
+OBJS = evaluating.o mpc.o
 TAR = $(NAME).tar
 MAKEFILE = makefile
 CC = gcc
