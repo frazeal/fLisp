@@ -97,8 +97,8 @@ void lval_del(lval* v) {
   case LVAL_SYM: free(v->sym); break;
 
     /* If Sexpr or Qexpr then delete all elements inside */
-  case LVAL_SEXPR:
   case LVAL_QEXPR:
+  case LVAL_SEXPR:
     for (int i = 0; i < v->count; i++) {
       lval_del(v->cell[i]);
     }
@@ -141,11 +141,11 @@ lval* lval_read(mpc_ast_t* t) {
 
   /* Fill this list with any valid expression contained within */
   for (int i = 0; i < t->children_num; i++) {
-    if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
     if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
     if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
     if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
     if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
+    if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
     x = lval_add(x, lval_read(t->children[i]));
   }
 
@@ -324,10 +324,10 @@ int main(int argc, char* argv[]) {
   mpca_lang(MPCA_LANG_DEFAULT,
 	"                                                             \
          number   : /-?[0-9]+/ ;                                      \
-         symbol   : '+' | '-' | '*' | '/' | '%' | '^' |               \
-                    \"min\" | \"max\" | \"list\" | \"head\" |         \
-                    \"tail\" | \"join\" | \"eval\" | \"cons\" |       \
-                    \"len\" | \"init\" ;			      \
+         symbol   : '+' | '-' | '*' | '/' | '%' | '^'                 \
+                  | \"min\" | \"max\" | \"list\" | \"head\"           \
+                  | \"tail\" | \"join\" | \"eval\" | \"cons\"         \
+                  | \"len\" | \"init\" ;			      \
          sexpr    : '(' <expr>* ')' ;                                 \
          qexpr    : '{' <expr>* '}' ;                                 \
          expr     : <number> | <symbol> | <sexpr> | <qexpr> ; 	      \
