@@ -97,8 +97,8 @@ void lval_del(lval* v) {
   case LVAL_SYM: free(v->sym); break;
 
     /* If Sexpr or Qexpr then delete all elements inside */
-  case LVAL_QEXPR:
   case LVAL_SEXPR:
+  case LVAL_QEXPR:
     for (int i = 0; i < v->count; i++) {
       lval_del(v->cell[i]);
     }
@@ -136,8 +136,8 @@ lval* lval_read(mpc_ast_t* t) {
   /* If root (>), sexpr or qexpr then create an empty list */
   lval* x = NULL;
   if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); }
-  if (strcmp(t->tag, "sexpr"))  { x = lval_sexpr(); }
-  if (strcmp(t->tag, "qexpr"))  { x = lval_qexpr(); }
+  if (strstr(t->tag, "sexpr"))  { x = lval_sexpr(); }
+  if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }
 
   /* Fill this list with any valid expression contained within */
   for (int i = 0; i < t->children_num; i++) {
@@ -172,9 +172,9 @@ void lval_expr_print(lval* v, char open, char close) {
 /* Print an "lval" */
 void lval_print(lval* v) {
   switch (v->type) {
-    case LVAL_NUM: printf("%li", v->num); break;
-    case LVAL_ERR: printf("Error: %s", v->err); break;
-    case LVAL_SYM: printf("%s", v->sym); break;
+    case LVAL_NUM:   printf("%li", v->num); break;
+    case LVAL_ERR:   printf("Error: %s", v->err); break;
+    case LVAL_SYM:   printf("%s", v->sym); break;
     case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
     case LVAL_QEXPR: lval_expr_print(v, '{', '}'); break;
   }
