@@ -222,6 +222,15 @@ lval* lval_join(lval* x, lval* y) {
 #define LASSERT(args, cond, err) \
   if (!(cond)) { lval_del(args); return lval_err(err); }
 
+/*
+#define LASSERT_NUMB_ARGS(args, cond,  expected)	\
+  if (!(cond == expected)) { lavl_del(args);		\
+    lval_err("Incorrect number of arguments!"); }
+
+#define LASSERT_EMPTY(args, cond)			\
+  if (cond == 0) { lval_del(args); lval_err("Empty list {}!");
+*/
+
 lval* lval_eval(lval* v);
 
 lval* builtin_head(lval* a) {
@@ -299,6 +308,84 @@ lval* builtin_join(lval* a) {
   return x;
 }
 
+lval* builtin_cons(lval* a) {
+  /* Check error conditions */
+  LASSERT(a, a->count == 2,
+	  "Function 'cons' passed wrong arguments!");
+
+  LASSERT(a, a->cell[1]->type == LVAL_QEXPR,
+	  "Function 'cons' passed incorrect types!");
+  
+  LASSERT(a, a->cell[0]->count != 0,
+	  "Function 'cons' passed {}!");
+
+  /* Construct new Q-expr */
+  lval* x = lval_qexpr();
+  /* Add the value */
+  x = lval_add(x, lval_pop(a, 0));
+  /* Add the elements of the Q-expr */
+  while (a->cell[1]->count) {
+    x = lval_add(x, lval_pop(a->cell[1], 0));
+  }
+  
+  lval_del(a);
+  return x;
+};
+
+lval* builtin_len(lval* a) {
+  /* Check error conditions */
+  LASSERT(a, a->count == 1,
+	  "Function 'last' passed too many arguments!");
+
+  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+	  "Function 'last' passed incorrect types!");
+
+  LASSERT(a, a->cell[0]->count != 0,
+	  "Function 'last' passed {}!");
+
+  return lval_num(a->cell[0]->count);
+};
+
+lval* builtin_init(lval* a) {
+     /* Check error conditions */
+  LASSERT(a, a->count == 1,
+	  "Function 'tail' passed too many arguments!");
+
+  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+	  "Function 'tail' passed incorrect types!");
+
+  LASSERT(a, a->cell[0]->count != 0,
+	  "Function 'tail' passed {}!");
+
+  /* Take first argument */
+  lval* v = lval_take(a, 0);
+
+  /* Delete last element and return */
+  lval_del(lval_pop(v, v->count-1));
+  return v;
+}
+
+lval* builtin_last(lval* a) {
+   /* Check error conditions */
+  LASSERT(a, a->count == 1,
+	  "Function 'last' passed too many arguments!");
+
+  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+	  "Function 'last' passed incorrect types!");
+
+  LASSERT(a, a->cell[0]->count != 0,
+	  "Function 'last' passed {}!");
+
+  /* Otherwise take first argument */
+  lval* v = lval_take(a, 0);
+
+  /* Delete all elements that are not last and return */
+  while (v->count > 1) {
+   lval_del(lval_pop(v, 0));
+  }
+  return v;
+}
+
 lval* builtin_op(lval* a, char* op) {
 
   /* Ensure all arguments are number */
@@ -365,7 +452,14 @@ lval* builtin(lval* a, char* func) {
   if (strcmp("tail", func) == 0) { return builtin_tail(a); }
   if (strcmp("join", func) == 0) { return builtin_join(a); }
   if (strcmp("eval", func) == 0) { return builtin_eval(a); }
+  if (strcmp("cons", func) == 0) { return builtin_cons(a); }
+  if (strcmp("init", func) == 0) { return builtin_init(a); }
+  if (strcmp("last", func) == 0) { return builtin_last(a); }
+  if (strcmp("len" , func) == 0) { return builtin_len(a);  }
   if (strstr("+-*/%^", func)) { return builtin_op(a, func); }
+  if (strcmp("min", func) == 0)  { return builtin_op(a, func); }
+  if (strcmp("max", func) == 0)  { return builtin_op(a, func); }
+  
   lval_del(a);
   return lval_err("Unknown function!");
 }
@@ -430,7 +524,7 @@ int main(int argc, char* argv[]) {
          symbol   : '+' | '-' | '*' | '/' | '%' | '^'                 \
                   | \"min\" | \"max\" | \"list\" | \"head\"           \
                   | \"tail\" | \"join\" | \"eval\" | \"cons\"         \
-                  | \"len\" | \"init\" ;			      \
+                  | \"len\" | \"init\" | \"last\"  ;		      \
          sexpr    : '(' <expr>* ')' ;                                 \
          qexpr    : '{' <expr>* '}' ;                                 \
          expr     : <number> | <symbol> | <sexpr> | <qexpr> ; 	      \
