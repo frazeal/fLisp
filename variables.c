@@ -335,13 +335,13 @@ lval* builtin_cons(lval* a) {
 lval* builtin_len(lval* a) {
   /* Check error conditions */
   LASSERT(a, a->count == 1,
-	  "Function 'last' passed too many arguments!");
+	  "Function 'len' passed too many arguments!");
 
   LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
-	  "Function 'last' passed incorrect types!");
+	  "Function 'len' passed incorrect types!");
 
   LASSERT(a, a->cell[0]->count != 0,
-	  "Function 'last' passed {}!");
+	  "Function 'len' passed {}!");
 
   return lval_num(a->cell[0]->count);
 };
